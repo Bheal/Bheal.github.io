@@ -1,0 +1,143 @@
+---
+title: "Prediction project"
+author: "Balsher Singh"
+date: "April 28, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, suppressMessages=T, suppressWarnings=T)
+```
+
+### Summary 
+    We are given a set of data with 160 features/variables are asked come up with a prediction algorithm using the training set and predict a 'classe' variable from the test data set.  6 participants were asked to do bicep curl and 'classe' record weather they executed properly, which is recorded as Class A or there execution had one of these four mistakes: "throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E)."
+    And how we predict class for the test set given a set of 160 features of 19,622 observations is up to us.
+
+```{r}
+set.seed(333)
+```
+
+  
+### Data Exploration
+Load data and check its structure
+```{r, results='hide'}
+train <- read.csv(url("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"))
+
+test <- read.csv(url("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"))
+str(train)
+```
+
+#### Data cleaning
+
+There are several columns that are empty or contain all N/A values.
+
+```{r}
+t2 <- train[,!(sapply(train, function(x) sum(is.na(x)))==19216)]
+t2 <- t2[,!sapply(t2, function(x) sum(x=="")==19216)]
+
+```
+
+In t2, I have saved the training data after removing all such columns.
+
+```{r, results='hide'}
+str(t2)
+```
+
+I see that there is a date/time column
+
+```{r}
+t2$cvtd_timestamp <- as.Date(x = t2$cvtd_timestamp, format = "%d/%m/%Y %H:%M")
+```
+
+#### Data slicing
+I leave aside the 20 observation saved in the `test` variable and partition the training set into train, 't3' and validation, 't4' sets to the proportion of 75/25 respectively, note we use the 'classe' variable.
+
+```{r}
+library(caret)
+intrain <- createDataPartition(train$classe, p = 0.75, list = FALSE)
+t3 <- t2[intrain,]
+t4 <- t2[-intrain,]
+
+```
+
+
+#### Continue exploration with the in training data
+```{r}
+library(ggplot2)
+ggplot(t3, aes(x=user_name, fill = classe)) + geom_histogram(stat="count") + ggtitle("Visual of the distribution of 'classe' for each user")
+```
+
+#### Principal component analysis
+Applying the the `pccomp()` function I check which columns are contributing the most to variance in independent variables, after removing the factor, the rownumber,the raw_timestamp columns and num_window, and others as deedmed unimportant by judgement I have a my columns of interest which are saved in `with_pca`, note: classe was removed during PCA and will be insert later.
+
+
+```{r}
+t3.pca.3 <- prcomp(t3[-c(1,2,3,4,5,6,7,60)])
+plot(t3.pca.3)
+```
+
+```{r}
+with_pca <- rownames(t3.pca.3$rotation)
+head(with_pca)
+```
+
+
+
+### Model fitting
+
+First try to fit the model with first 15 varaibles seen to be good predictor as seen by PCA.
+
+```{r}
+library(caret)
+library(rattle)
+id.fit1 <- c(with_pca[1:15],names(t3)[60]) 
+fit1 <- train(classe ~ . , method = 'rpart', data = t3[id.fit1])
+fancyRpartPlot(fit1$finalModel)
+```
+
+Predict and check its Accuracy
+
+```{r}
+pred1 <- predict(fit1, newdata = t4[id.fit1])
+pred1.c <- confusionMatrix(pred1, t4$classe)
+pred1.c$overall['Accuracy']
+```
+
+There is not enough accuracy in this model.
+
+Repeat with all the components of PCA
+
+```{r}
+id.fit2 <- c(with_pca[1:20],names(t3)[60]) 
+fit2 <- train(classe ~ . , method = 'rpart', data = t3[id.fit2])
+fancyRpartPlot(fit2$finalModel)
+pred2 <- predict(fit2, newdata = t4[id.fit2])
+pred2.c <- confusionMatrix(pred2, t4$classe)
+pred2.c$overall['Accuracy']
+```
+
+Still the accuracy has has not improved enough, with Decision Trees method accuracy dose not go above 61%.
+
+#### Random Forest
+```{r}
+library(randomForest)
+fit.rf <- randomForest(classe ~ ., data = t3[c(with_pca,names(t3)[60])])
+pred.rf <- predict(fit.rf, t4)
+pred.rf.c <- confusionMatrix(pred.rf, t4$classe)
+pred.rf.c$table
+
+```
+
+This is confusin Matrix is acceptable and will be chossen as the final model.
+
+Apply the final model on test dataset
+
+```{r}
+testset <- test[, names(test) %in% names(t3[c(with_pca,names(t3)[60])])]
+
+
+
+predict(fit.rf, testset)
+
+```
+___
