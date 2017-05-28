@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html><head><title>STAT 29000</title></head><body>
+<center>
+<b>STAT 29000</b><br>
+<b>Project 2</b><br>
+due Wednesday, September 10, at 9:30 AM <br>
+</center>
+<br>
+<br>
+Put all of your solutions into one text file for your group.  The file should be called, for instance:<br>
+p02g1.R for project 2, group 1, and should be stored in the folder: /proj/gpproj14/p02g1/<br>&nbsp;&nbsp;&nbsp;Group 1 consists of: 
+kidd6,enorlin,john1209,cdesanti<br>
+p02g2.R for project 2, group 2, and should be stored in the folder: /proj/gpproj14/p02g2/<br>&nbsp;&nbsp;&nbsp;Group 2 consists of: 
+ffranci,gallaghp,zhan1460,reno0<br>
+p02g3.R for project 2, group 3, and should be stored in the folder: /proj/gpproj14/p02g3/<br>&nbsp;&nbsp;&nbsp;Group 3 consists of: 
+lyoke,vincentc,malek,marti748<br>
+p02g4.R for project 2, group 4, and should be stored in the folder: /proj/gpproj14/p02g4/<br>&nbsp;&nbsp;&nbsp;Group 4 consists of: 
+boydp,philliw,cringwa,omalleyb<br>
+p02g5.R for project 2, group 5, and should be stored in the folder: /proj/gpproj14/p02g5/<br>&nbsp;&nbsp;&nbsp;Group 5 consists of: 
+fu82,rcrutkow,avorhies,peter188<br>
+<hr>
+1. Consider the Columbia River Estuary dataset discussed in the <a href="../week2.html">week 2 notes</a>:<br>
+1a.  You can <a href="saturn03.240.A.CT_2012_06_PD0.csv">download the data set here</a>.<br>
+1b.  Import this data into R, using the read.csv function.<br>
+1c.  Use the strptime function to convert the first column of the data into numerical times that R can easily handle.<br>
+<br>
+2a.  What is the most common time (in seconds) between consecutive measurements, in the data set?  How often is the data sampled with this exact difference in time, between consecutive measurements?<br>
+2b.  What is the mean time between consecutive measurements?  Why is this significantly different from the most common time, found in part "2a" above?<br>
+<br>
+3a.  Suppose that we treat "15 seconds" as a threshold in consecutive time measurements, i.e., if the machine goes more than 15 seconds without taking a measurement, we consider that the machine is temporarily broken/clogged/stuck/etc.  With this level of threshold, how many times did this particular machine (at this particular location) get stuck during June 2012?<br>
+3b.  How long is longest duration when the machine was broken?  When did this occur? Specifically: when did it break, and when did it start working properly again?<br>
+3c.  Find the ten longest durations for when the machine was broken; just give each such measurement in seconds.<br>
+<br>
+4a. Does the device which measures the electrical conductivity ever give a false reading?  If so, when?  Give the specific times (e.g., the day(s), hours, minutes, seconds), when this occurs in June, for each such occurrence.<br>
+4b. Are any of these times in "4a" the same as the one (unique) time when the temperature device gave a false reading?  (We saw, in the notes, that the temperature device had one false reading.)<br>
+4c.  Does the device which measures the salinity ever give a false reading?  What evidence to you have to support this claim?<br>
+<br>
+5a.  Repeat the questions from 2a/2b/3a/3b/3c, but now use the data set from the same point on the Columbia River Estuary but at the depth of 8.2m (the data from the questions above was measured at 2.4m below the surface).  The data set from 8.2m below the surface can be 
+<a href="saturn03.820.A.CT_2012_06_PD0.csv">downloaded here</a>.<br>
+5b.  Does the longest time in which the machine was broken in 3b (at depth 2.4m) correspond roughly to the 
+same longest time in which the machine was broken in this current data set, at depth 8.2m?  For this longest time interval, what are the times (at depth 8.2m), when the machine did break, and when did it start working properly again?<br>
+5c.  Make a plot of the temperature data at depth 8.2m.  There is exactly one false reading in which the temperature is too high,
+and exactly one false reading in which the temperature is too low.  Be sure to remove these points before plotting.
+<br>
+<br>
+6a.  We also have data from depth 13m below the surface.
+We can <a href="saturn03.1300.R.CT_2012_06_PD0.csv">download it here</a>.  Import this data into R.<br>
+6b.  Is the water temperature generally highest, on average, at depth 2.4m, 8.2m, or 13m below the surface?  Does your answer make intuitive sense?<br>
+<br>
+7a.  What is the average salinity of the water at depth 2.4m?  At depth 8.2m?  At depth 13m?  What about the variance of the salinity at all 3 depths?  Be sure to remove any outliers, when appropriate.<br>
+7b.  At depth 13m, make a plot of time versus salinity.<br>
+7c.  As we saw in 7b, much more data is available during the first two weeks of June, as opposed to the second two weeks of June.  Make a revised plot, showing only the time versus salinity from the start of the day on June 6, through the end of the day on June 12 (i.e., for a full 7-day period).  How many cycles of the salinity do you think you see on this plot?  Is there a natural reason for this number of cycles?<br>
+<br>
+8.  At depth 2.4m, what fraction of the temperature data points are between 10 and 12?  Between 12 and 14?  Between 14 and 16?  Between 16 and 18?  Use the tapply function to answer all four of these questions with one line of code.<br>
+<br>
+9.  At depth 2.4m, 
+what is the average temperature between the start of the day on June 1 and the end of the day on June 7?
+What is the average temperature between the start of the day on June 8 and the end of the day on June 14?
+What is the average temperature between the start of the day on June 15 and the end of the day on June 21?
+What is the average temperature between the start of the day on June 22 and the end of the day on June 28?
+Use the tapply function to answer all four of these questions with one line of code.<br>
+[Note: The original problem statement had an off-by-one typographical error on some of the dates.]<br>
+<br>
+10.  At depth 13m, 
+how many data points have salinity greater than 12 and temperature greater than 14?
+How many data points have salinity greater than 12 and temperature at most 14?
+How many data points have salinity at most 12 and temperature greater than 14?
+How many data points have salinity at most 12 and temperature at most 14?
+Use the tapply function to answer all four of these questions with one line of code.  [Hint:  You will need to embed a "list" into your tapply, as we did in the <a href="http://llc.stat.purdue.edu/2014/29000/notes/CO2examplecontinued.R">second CO2 example</a>.]
+
+</body></html>
